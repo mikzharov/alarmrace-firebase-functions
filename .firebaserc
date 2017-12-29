@@ -1,5 +1,5 @@
 {
   "projects": {
-    "prod": "alarm-race-37f41"
+    "default": "alarm-race-37f41"
   }
 }
