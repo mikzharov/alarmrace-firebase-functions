@@ -28,3 +28,6 @@ const validateUserToken = (req, res, next) => {
 
 app.use(validateUserToken);
 app.use(cors);
+
+// Firebase HTTPS trigger
+exports.app = functions.https.onRequest(app);
