@@ -3,6 +3,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 const express = require('express');
+var db = admin.firestore();
 
 
 // const cors = require('cors')({origin: true});
@@ -32,10 +33,20 @@ app.use(validateUserToken);
 // app.use(cors);
 
 app.post('/accept_invite', function (req, res) {
-  if(req.gameCode){
-    res.status(200).send("Gamecode found");
+  var gamecode = req.body.gameCode;
+  if(gamecode){
+    var gameRef = db.collection('games').doc(gamecode);
+    var getGame = gameRef.get().then(doc => {
+        if (!doc.exists) {
+            res.status(200).send("Gamecode NOT found in database");
+        } else {
+            res.status(200).send("Gamecode found in database");
+        }
+    }).catch(err => {
+        res.status(200).send("Database error");
+    });
   }else{
-    res.status(200).send("Gamecode NOT found");
+    res.status(200).send("You did not send a gamecode");
   }
 })
 
