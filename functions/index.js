@@ -38,15 +38,15 @@ app.post('/accept_invite', function (req, res) {
     var gameRef = db.collection('games').doc(gamecode);
     var getGame = gameRef.get().then(doc => {
         if (!doc.exists) {
-            res.status(200).send("Gamecode NOT found in database");
+            res.status(400).send("Gamecode NOT found in database");
         } else {
             res.status(200).send("Gamecode found in database");
         }
     }).catch(err => {
-        res.status(200).send("Database error");
+        res.status(500).send("Database error");
     });
   }else{
-    res.status(200).send("You did not send a gamecode");
+    res.status(400).send("You did not send a gamecode");
   }
 })
 
