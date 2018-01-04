@@ -39,14 +39,17 @@ app.post('/accept_invite', function (req, res) {
   if(gamecode){
     var gameRef = db.collection('games').doc(gamecode);
     var getGame = gameRef.get().then(doc => {
-        if (!doc.exists) {
-          res.status(404).send("Gamecode NOT found in database");
-        } else {
-          return gameRef.set({
-            p2: uid,
-            n2: fcm_token
-          }, { merge: true });
-        }
+      var data = doc.data();
+      if (!doc.exists) {
+        res.status(404).send("Gamecode NOT found in database");
+      } else if (data.p2 && data.p2 != uid){
+        res.status(403).send("Game already in progress");
+      } else{
+        return gameRef.set({
+          p2: uid,
+          n2: fcm_token
+        }, { merge: true });
+      }
     }).then(()=>{
       res.status(200).send("Successfully accepted");
     }).catch(err => {
