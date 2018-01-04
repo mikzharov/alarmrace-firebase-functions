@@ -34,16 +34,23 @@ app.use(validateUserToken);
 
 app.post('/accept_invite', function (req, res) {
   var gamecode = req.body.gameCode;
+  var uid = req.body.uid;
+  var fcm_token = req.body.fcm_token;
   if(gamecode){
     var gameRef = db.collection('games').doc(gamecode);
     var getGame = gameRef.get().then(doc => {
         if (!doc.exists) {
-            res.status(400).send("Gamecode NOT found in database");
+          res.status(404).send("Gamecode NOT found in database");
         } else {
-            res.status(200).send("Gamecode found in database");
+          return gameRef.set({
+            p2: uid,
+            n2: fcm_token
+          }, { merge: true });
         }
+    }).then(()=>{
+      res.status(200).send("Successfully accepted");
     }).catch(err => {
-        res.status(500).send("Database error");
+      res.status(500).send("Database error");
     });
   }else{
     res.status(400).send("You did not send a gamecode");
